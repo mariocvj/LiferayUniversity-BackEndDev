@@ -29,7 +29,7 @@
 
         <aui:input name="assignmentId" field="assignmentId" type="hidden" />
 
-        <aui:fieldset-group markupView="lexicon">
+        <div class="sheet"><div class="panel-group panel-group-flush">
 
             <aui:fieldset>
 
@@ -51,7 +51,7 @@
                     <aui:validator name="required" />
                 </aui:input>
             </aui:fieldset>
-        </aui:fieldset-group>
+        </div></div>
 
         <%--Buttons. --%>
 
