@@ -26,12 +26,14 @@ import com.liferay.training.gradebook.model.Assignment;
 import com.liferay.training.gradebook.service.base.AssignmentLocalServiceBaseImpl;
 import com.liferay.training.gradebook.validator.AssignmentValidator;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
 /**
  * The implementation of the assignment local service.
  *
@@ -54,12 +56,13 @@ import org.osgi.service.component.annotations.Reference;
 		property = "model.class.name=com.liferay.training.gradebook.model.Assignment",
 		service = AopService.class
 )
+
 public class AssignmentLocalServiceImpl extends AssignmentLocalServiceBaseImpl {
 
-	public Assignment addAssignment(long groupId, String title, String description,
+	public Assignment addAssignment(long groupId, Map<Locale, String> titleMap, String description,
 									Date dueDate, ServiceContext serviceContext) throws PortalException {
 		// Validate assignment parameters.
-		_assignmentValidator.validate(title, description, dueDate);
+		_assignmentValidator.validate(titleMap, description, dueDate);
 		// Get group and user.
 		Group group = groupLocalService.getGroup(groupId);
 		long userId = serviceContext.getUserId();
@@ -75,22 +78,22 @@ public class AssignmentLocalServiceImpl extends AssignmentLocalServiceBaseImpl {
 		assignment.setDescription(description);
 		assignment.setGroupId(groupId);
 		assignment.setModifiedDate(serviceContext.getModifiedDate(new Date()));
-		assignment.setTitle(title);
+		assignment.setTitleMap(titleMap);
 		assignment.setUserId(userId);
 		assignment.setUserName(user.getScreenName());
 		// Persist assignment to database.
 		return super.addAssignment(assignment);
 	}
 
-	public Assignment updateAssignment(long assignmentId, String title,
+	public Assignment updateAssignment(long assignmentId, Map<Locale, String> titleMap,
 									   String description, Date dueDate, ServiceContext serviceContext) throws PortalException {
 		// Validate assignment parameters.
-		_assignmentValidator.validate(title, description, dueDate);
+		_assignmentValidator.validate(titleMap, description, dueDate);
 		// Get the Assignment by id.
 		Assignment assignment = getAssignment(assignmentId);
 		// Set updated fields and modification date.
 		assignment.setModifiedDate(new Date());
-		assignment.setTitle(title);
+		assignment.setTitleMap(titleMap);
 		assignment.setDueDate(dueDate);
 		assignment.setDescription(description);
 		assignment = super.updateAssignment(assignment);
