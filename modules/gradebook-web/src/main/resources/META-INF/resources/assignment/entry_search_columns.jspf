@@ -60,22 +60,22 @@
 
             <%-- Vertical card. --%>
 
-            <liferay-frontend:icon-vertical-card
+            <liferay-clay:icon-vertical-card
                     actionJsp="/assignment/entry_actions.jsp"
                     actionJspServletContext="<%= application %>"
                     icon="cards2" resultRow="${row}"
                     title="${entry.title}"
                     url="${viewAssignmentURL}">
 
-                <liferay-frontend:vertical-card-sticker-bottom>
+                <liferay-clay:vertical-card-sticker-bottom>
 
                     <liferay-ui:user-portrait
                             cssClass="sticker sticker-bottom"
                             userId="${entry.userId}"
                     />
-                </liferay-frontend:vertical-card-sticker-bottom>
+                </liferay-clay:vertical-card-sticker-bottom>
 
-                <liferay-frontend:vertical-card-footer>
+                <liferay-clay:vertical-card-footer>
 
                     <div class="truncate-text">
 
@@ -83,8 +83,8 @@
 
                         <%=HtmlUtil.stripHtml(entry.getDescription()) %>
                     </div>
-                </liferay-frontend:vertical-card-footer>
-            </liferay-frontend:icon-vertical-card>
+                </liferay-clay:vertical-card-footer>
+            </liferay-clay:icon-vertical-card>
         </liferay-ui:search-container-column-text>
     </c:when>
 
