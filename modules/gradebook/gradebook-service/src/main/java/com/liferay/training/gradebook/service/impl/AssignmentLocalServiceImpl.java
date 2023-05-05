@@ -11,9 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
 package com.liferay.training.gradebook.service.impl;
-
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.orm.Disjunction;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -26,23 +24,42 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.training.gradebook.model.Assignment;
 import com.liferay.training.gradebook.service.base.AssignmentLocalServiceBaseImpl;
-
-import org.osgi.service.component.annotations.Component;
+import com.liferay.training.gradebook.validator.AssignmentValidator;
 
 import java.util.Date;
 import java.util.List;
-
+import java.util.Locale;
+import java.util.Map;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 /**
+ * The implementation of the assignment local service.
+ *
+ * <p>
+ * All custom service methods should be put in this class. Whenever methods are
+ * added, rerun ServiceBuilder to copy their definitions into the
+ * <code>com.liferay.training.gradebook.service.AssignmentLocalService</code>
+ * interface.
+ *
+ * <p>
+ * This is a local service. Methods of this service will not have security
+ * checks based on the propagated JAAS credentials because this service can only
+ * be accessed from within the same VM.
+ * </p>
+ *
  * @author Brian Wing Shun Chan
+ * @see AssignmentLocalServiceBaseImpl
  */
 @Component(
-	property = "model.class.name=com.liferay.training.gradebook.model.Assignment",
-	service = AopService.class
+		property = "model.class.name=com.liferay.training.gradebook.model.Assignment",
+		service = AopService.class
 )
 public class AssignmentLocalServiceImpl extends AssignmentLocalServiceBaseImpl {
 
 	public Assignment addAssignment(long groupId, String title, String description,
 									Date dueDate, ServiceContext serviceContext) throws PortalException {
+		// Validate assignment parameters.
+		_assignmentValidator.validate(title, description, dueDate);
 		// Get group and user.
 		Group group = groupLocalService.getGroup(groupId);
 		long userId = serviceContext.getUserId();
@@ -67,6 +84,8 @@ public class AssignmentLocalServiceImpl extends AssignmentLocalServiceBaseImpl {
 
 	public Assignment updateAssignment(long assignmentId, String title,
 									   String description, Date dueDate, ServiceContext serviceContext) throws PortalException {
+		// Validate assignment parameters.
+		_assignmentValidator.validate(title, description, dueDate);
 		// Get the Assignment by id.
 		Assignment assignment = getAssignment(assignmentId);
 		// Set updated fields and modification date.
@@ -124,4 +143,6 @@ public class AssignmentLocalServiceImpl extends AssignmentLocalServiceBaseImpl {
 	public Assignment updateAssignment(Assignment assignment) {
 		throw new UnsupportedOperationException("Not supported.");
 	}
+	@Reference
+	AssignmentValidator _assignmentValidator;
 }
