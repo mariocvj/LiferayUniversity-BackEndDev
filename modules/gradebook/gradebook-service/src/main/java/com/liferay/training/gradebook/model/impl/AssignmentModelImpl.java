@@ -18,6 +18,7 @@ import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
+import com.liferay.portal.kernel.exception.LocaleException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.model.CacheModel;
@@ -27,8 +28,11 @@ import com.liferay.portal.kernel.model.impl.BaseModelImpl;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.training.gradebook.model.Assignment;
 import com.liferay.training.gradebook.model.AssignmentModel;
 
@@ -43,8 +47,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -74,8 +81,8 @@ public class AssignmentModelImpl
 		{"assignmentId", Types.BIGINT}, {"groupId", Types.BIGINT},
 		{"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
 		{"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
-		{"modifiedDate", Types.TIMESTAMP}, {"title", Types.VARCHAR},
-		{"description", Types.VARCHAR}, {"dueDate", Types.TIMESTAMP}
+		{"modifiedDate", Types.TIMESTAMP}, {"description", Types.VARCHAR},
+		{"dueDate", Types.TIMESTAMP}, {"title", Types.VARCHAR}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -89,13 +96,13 @@ public class AssignmentModelImpl
 		TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
-		TABLE_COLUMNS_MAP.put("title", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("dueDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("title", Types.VARCHAR);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table Gradebook_Assignment (assignmentId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,title VARCHAR(75) null,description VARCHAR(75) null,dueDate DATE null)";
+		"create table Gradebook_Assignment (assignmentId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,description VARCHAR(75) null,dueDate DATE null,title STRING null)";
 
 	public static final String TABLE_SQL_DROP =
 		"drop table Gradebook_Assignment";
@@ -261,9 +268,6 @@ public class AssignmentModelImpl
 		attributeSetterBiConsumers.put(
 			"modifiedDate",
 			(BiConsumer<Assignment, Date>)Assignment::setModifiedDate);
-		attributeGetterFunctions.put("title", Assignment::getTitle);
-		attributeSetterBiConsumers.put(
-			"title", (BiConsumer<Assignment, String>)Assignment::setTitle);
 		attributeGetterFunctions.put("description", Assignment::getDescription);
 		attributeSetterBiConsumers.put(
 			"description",
@@ -271,6 +275,9 @@ public class AssignmentModelImpl
 		attributeGetterFunctions.put("dueDate", Assignment::getDueDate);
 		attributeSetterBiConsumers.put(
 			"dueDate", (BiConsumer<Assignment, Date>)Assignment::setDueDate);
+		attributeGetterFunctions.put("title", Assignment::getTitle);
+		attributeSetterBiConsumers.put(
+			"title", (BiConsumer<Assignment, String>)Assignment::setTitle);
 
 		_attributeGetterFunctions = Collections.unmodifiableMap(
 			attributeGetterFunctions);
@@ -421,26 +428,6 @@ public class AssignmentModelImpl
 
 	@JSON
 	@Override
-	public String getTitle() {
-		if (_title == null) {
-			return "";
-		}
-		else {
-			return _title;
-		}
-	}
-
-	@Override
-	public void setTitle(String title) {
-		if (_columnOriginalValues == Collections.EMPTY_MAP) {
-			_setColumnOriginalValues();
-		}
-
-		_title = title;
-	}
-
-	@JSON
-	@Override
 	public String getDescription() {
 		if (_description == null) {
 			return "";
@@ -472,6 +459,115 @@ public class AssignmentModelImpl
 		}
 
 		_dueDate = dueDate;
+	}
+
+	@JSON
+	@Override
+	public String getTitle() {
+		if (_title == null) {
+			return "";
+		}
+		else {
+			return _title;
+		}
+	}
+
+	@Override
+	public String getTitle(Locale locale) {
+		String languageId = LocaleUtil.toLanguageId(locale);
+
+		return getTitle(languageId);
+	}
+
+	@Override
+	public String getTitle(Locale locale, boolean useDefault) {
+		String languageId = LocaleUtil.toLanguageId(locale);
+
+		return getTitle(languageId, useDefault);
+	}
+
+	@Override
+	public String getTitle(String languageId) {
+		return LocalizationUtil.getLocalization(getTitle(), languageId);
+	}
+
+	@Override
+	public String getTitle(String languageId, boolean useDefault) {
+		return LocalizationUtil.getLocalization(
+			getTitle(), languageId, useDefault);
+	}
+
+	@Override
+	public String getTitleCurrentLanguageId() {
+		return _titleCurrentLanguageId;
+	}
+
+	@JSON
+	@Override
+	public String getTitleCurrentValue() {
+		Locale locale = getLocale(_titleCurrentLanguageId);
+
+		return getTitle(locale);
+	}
+
+	@Override
+	public Map<Locale, String> getTitleMap() {
+		return LocalizationUtil.getLocalizationMap(getTitle());
+	}
+
+	@Override
+	public void setTitle(String title) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_title = title;
+	}
+
+	@Override
+	public void setTitle(String title, Locale locale) {
+		setTitle(title, locale, LocaleUtil.getSiteDefault());
+	}
+
+	@Override
+	public void setTitle(String title, Locale locale, Locale defaultLocale) {
+		String languageId = LocaleUtil.toLanguageId(locale);
+		String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
+
+		if (Validator.isNotNull(title)) {
+			setTitle(
+				LocalizationUtil.updateLocalization(
+					getTitle(), "Title", title, languageId, defaultLanguageId));
+		}
+		else {
+			setTitle(
+				LocalizationUtil.removeLocalization(
+					getTitle(), "Title", languageId));
+		}
+	}
+
+	@Override
+	public void setTitleCurrentLanguageId(String languageId) {
+		_titleCurrentLanguageId = languageId;
+	}
+
+	@Override
+	public void setTitleMap(Map<Locale, String> titleMap) {
+		setTitleMap(titleMap, LocaleUtil.getSiteDefault());
+	}
+
+	@Override
+	public void setTitleMap(
+		Map<Locale, String> titleMap, Locale defaultLocale) {
+
+		if (titleMap == null) {
+			return;
+		}
+
+		setTitle(
+			LocalizationUtil.updateLocalization(
+				titleMap, getTitle(), "Title",
+				LocaleUtil.toLanguageId(defaultLocale)));
 	}
 
 	public long getColumnBitmask() {
@@ -512,6 +608,72 @@ public class AssignmentModelImpl
 	}
 
 	@Override
+	public String[] getAvailableLanguageIds() {
+		Set<String> availableLanguageIds = new TreeSet<String>();
+
+		Map<Locale, String> titleMap = getTitleMap();
+
+		for (Map.Entry<Locale, String> entry : titleMap.entrySet()) {
+			Locale locale = entry.getKey();
+			String value = entry.getValue();
+
+			if (Validator.isNotNull(value)) {
+				availableLanguageIds.add(LocaleUtil.toLanguageId(locale));
+			}
+		}
+
+		return availableLanguageIds.toArray(
+			new String[availableLanguageIds.size()]);
+	}
+
+	@Override
+	public String getDefaultLanguageId() {
+		String xml = getTitle();
+
+		if (xml == null) {
+			return "";
+		}
+
+		Locale defaultLocale = LocaleUtil.getSiteDefault();
+
+		return LocalizationUtil.getDefaultLanguageId(xml, defaultLocale);
+	}
+
+	@Override
+	public void prepareLocalizedFieldsForImport() throws LocaleException {
+		Locale defaultLocale = LocaleUtil.fromLanguageId(
+			getDefaultLanguageId());
+
+		Locale[] availableLocales = LocaleUtil.fromLanguageIds(
+			getAvailableLanguageIds());
+
+		Locale defaultImportLocale = LocalizationUtil.getDefaultImportLocale(
+			Assignment.class.getName(), getPrimaryKey(), defaultLocale,
+			availableLocales);
+
+		prepareLocalizedFieldsForImport(defaultImportLocale);
+	}
+
+	@Override
+	@SuppressWarnings("unused")
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException {
+
+		Locale defaultLocale = LocaleUtil.getSiteDefault();
+
+		String modelDefaultLanguageId = getDefaultLanguageId();
+
+		String title = getTitle(defaultLocale);
+
+		if (Validator.isNull(title)) {
+			setTitle(getTitle(modelDefaultLanguageId), defaultLocale);
+		}
+		else {
+			setTitle(getTitle(defaultLocale), defaultLocale, defaultLocale);
+		}
+	}
+
+	@Override
 	public Assignment toEscapedModel() {
 		if (_escapedModel == null) {
 			Function<InvocationHandler, Assignment>
@@ -537,9 +699,9 @@ public class AssignmentModelImpl
 		assignmentImpl.setUserName(getUserName());
 		assignmentImpl.setCreateDate(getCreateDate());
 		assignmentImpl.setModifiedDate(getModifiedDate());
-		assignmentImpl.setTitle(getTitle());
 		assignmentImpl.setDescription(getDescription());
 		assignmentImpl.setDueDate(getDueDate());
+		assignmentImpl.setTitle(getTitle());
 
 		assignmentImpl.resetOriginalValues();
 
@@ -562,10 +724,10 @@ public class AssignmentModelImpl
 			this.<Date>getColumnOriginalValue("createDate"));
 		assignmentImpl.setModifiedDate(
 			this.<Date>getColumnOriginalValue("modifiedDate"));
-		assignmentImpl.setTitle(this.<String>getColumnOriginalValue("title"));
 		assignmentImpl.setDescription(
 			this.<String>getColumnOriginalValue("description"));
 		assignmentImpl.setDueDate(this.<Date>getColumnOriginalValue("dueDate"));
+		assignmentImpl.setTitle(this.<String>getColumnOriginalValue("title"));
 
 		return assignmentImpl;
 	}
@@ -675,14 +837,6 @@ public class AssignmentModelImpl
 			assignmentCacheModel.modifiedDate = Long.MIN_VALUE;
 		}
 
-		assignmentCacheModel.title = getTitle();
-
-		String title = assignmentCacheModel.title;
-
-		if ((title != null) && (title.length() == 0)) {
-			assignmentCacheModel.title = null;
-		}
-
 		assignmentCacheModel.description = getDescription();
 
 		String description = assignmentCacheModel.description;
@@ -698,6 +852,14 @@ public class AssignmentModelImpl
 		}
 		else {
 			assignmentCacheModel.dueDate = Long.MIN_VALUE;
+		}
+
+		assignmentCacheModel.title = getTitle();
+
+		String title = assignmentCacheModel.title;
+
+		if ((title != null) && (title.length() == 0)) {
+			assignmentCacheModel.title = null;
 		}
 
 		return assignmentCacheModel;
@@ -769,9 +931,10 @@ public class AssignmentModelImpl
 	private Date _createDate;
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
-	private String _title;
 	private String _description;
 	private Date _dueDate;
+	private String _title;
+	private String _titleCurrentLanguageId;
 
 	public <T> T getColumnValue(String columnName) {
 		Function<Assignment, Object> function = _attributeGetterFunctions.get(
@@ -807,9 +970,9 @@ public class AssignmentModelImpl
 		_columnOriginalValues.put("userName", _userName);
 		_columnOriginalValues.put("createDate", _createDate);
 		_columnOriginalValues.put("modifiedDate", _modifiedDate);
-		_columnOriginalValues.put("title", _title);
 		_columnOriginalValues.put("description", _description);
 		_columnOriginalValues.put("dueDate", _dueDate);
+		_columnOriginalValues.put("title", _title);
 	}
 
 	private transient Map<String, Object> _columnOriginalValues;
@@ -837,11 +1000,11 @@ public class AssignmentModelImpl
 
 		columnBitmasks.put("modifiedDate", 64L);
 
-		columnBitmasks.put("title", 128L);
+		columnBitmasks.put("description", 128L);
 
-		columnBitmasks.put("description", 256L);
+		columnBitmasks.put("dueDate", 256L);
 
-		columnBitmasks.put("dueDate", 512L);
+		columnBitmasks.put("title", 512L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

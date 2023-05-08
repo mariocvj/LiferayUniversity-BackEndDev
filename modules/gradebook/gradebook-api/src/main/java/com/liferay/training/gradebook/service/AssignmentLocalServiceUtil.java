@@ -24,6 +24,7 @@ import com.liferay.training.gradebook.model.Assignment;
 import java.io.Serializable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provides the local service utility for Assignment. This utility wraps
@@ -60,13 +61,13 @@ public class AssignmentLocalServiceUtil {
 	}
 
 	public static Assignment addAssignment(
-			long groupId, String title, String description,
-			java.util.Date dueDate,
+			long groupId, Map<java.util.Locale, String> titleMap,
+			String description, java.util.Date dueDate,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
 		return getService().addAssignment(
-			groupId, title, description, dueDate, serviceContext);
+			groupId, titleMap, description, dueDate, serviceContext);
 	}
 
 	/**
@@ -334,13 +335,13 @@ public class AssignmentLocalServiceUtil {
 	}
 
 	public static Assignment updateAssignment(
-			long assignmentId, String title, String description,
-			java.util.Date dueDate,
+			long assignmentId, Map<java.util.Locale, String> titleMap,
+			String description, java.util.Date dueDate,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
 		return getService().updateAssignment(
-			assignmentId, title, description, dueDate, serviceContext);
+			assignmentId, titleMap, description, dueDate, serviceContext);
 	}
 
 	public static AssignmentLocalService getService() {

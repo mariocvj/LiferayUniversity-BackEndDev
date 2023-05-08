@@ -15,11 +15,15 @@
 package com.liferay.training.gradebook.model;
 
 import com.liferay.portal.kernel.bean.AutoEscape;
+import com.liferay.portal.kernel.exception.LocaleException;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.GroupedModel;
+import com.liferay.portal.kernel.model.LocalizedModel;
 import com.liferay.portal.kernel.model.ShardedModel;
 
 import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -36,7 +40,7 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @ProviderType
 public interface AssignmentModel
-	extends BaseModel<Assignment>, GroupedModel, ShardedModel {
+	extends BaseModel<Assignment>, GroupedModel, LocalizedModel, ShardedModel {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -186,21 +190,6 @@ public interface AssignmentModel
 	public void setModifiedDate(Date modifiedDate);
 
 	/**
-	 * Returns the title of this assignment.
-	 *
-	 * @return the title of this assignment
-	 */
-	@AutoEscape
-	public String getTitle();
-
-	/**
-	 * Sets the title of this assignment.
-	 *
-	 * @param title the title of this assignment
-	 */
-	public void setTitle(String title);
-
-	/**
 	 * Returns the description of this assignment.
 	 *
 	 * @return the description of this assignment
@@ -228,6 +217,118 @@ public interface AssignmentModel
 	 * @param dueDate the due date of this assignment
 	 */
 	public void setDueDate(Date dueDate);
+
+	/**
+	 * Returns the title of this assignment.
+	 *
+	 * @return the title of this assignment
+	 */
+	public String getTitle();
+
+	/**
+	 * Returns the localized title of this assignment in the language. Uses the default language if no localization exists for the requested language.
+	 *
+	 * @param locale the locale of the language
+	 * @return the localized title of this assignment
+	 */
+	@AutoEscape
+	public String getTitle(Locale locale);
+
+	/**
+	 * Returns the localized title of this assignment in the language, optionally using the default language if no localization exists for the requested language.
+	 *
+	 * @param locale the local of the language
+	 * @param useDefault whether to use the default language if no localization exists for the requested language
+	 * @return the localized title of this assignment. If <code>useDefault</code> is <code>false</code> and no localization exists for the requested language, an empty string will be returned.
+	 */
+	@AutoEscape
+	public String getTitle(Locale locale, boolean useDefault);
+
+	/**
+	 * Returns the localized title of this assignment in the language. Uses the default language if no localization exists for the requested language.
+	 *
+	 * @param languageId the ID of the language
+	 * @return the localized title of this assignment
+	 */
+	@AutoEscape
+	public String getTitle(String languageId);
+
+	/**
+	 * Returns the localized title of this assignment in the language, optionally using the default language if no localization exists for the requested language.
+	 *
+	 * @param languageId the ID of the language
+	 * @param useDefault whether to use the default language if no localization exists for the requested language
+	 * @return the localized title of this assignment
+	 */
+	@AutoEscape
+	public String getTitle(String languageId, boolean useDefault);
+
+	@AutoEscape
+	public String getTitleCurrentLanguageId();
+
+	@AutoEscape
+	public String getTitleCurrentValue();
+
+	/**
+	 * Returns a map of the locales and localized titles of this assignment.
+	 *
+	 * @return the locales and localized titles of this assignment
+	 */
+	public Map<Locale, String> getTitleMap();
+
+	/**
+	 * Sets the title of this assignment.
+	 *
+	 * @param title the title of this assignment
+	 */
+	public void setTitle(String title);
+
+	/**
+	 * Sets the localized title of this assignment in the language.
+	 *
+	 * @param title the localized title of this assignment
+	 * @param locale the locale of the language
+	 */
+	public void setTitle(String title, Locale locale);
+
+	/**
+	 * Sets the localized title of this assignment in the language, and sets the default locale.
+	 *
+	 * @param title the localized title of this assignment
+	 * @param locale the locale of the language
+	 * @param defaultLocale the default locale
+	 */
+	public void setTitle(String title, Locale locale, Locale defaultLocale);
+
+	public void setTitleCurrentLanguageId(String languageId);
+
+	/**
+	 * Sets the localized titles of this assignment from the map of locales and localized titles.
+	 *
+	 * @param titleMap the locales and localized titles of this assignment
+	 */
+	public void setTitleMap(Map<Locale, String> titleMap);
+
+	/**
+	 * Sets the localized titles of this assignment from the map of locales and localized titles, and sets the default locale.
+	 *
+	 * @param titleMap the locales and localized titles of this assignment
+	 * @param defaultLocale the default locale
+	 */
+	public void setTitleMap(Map<Locale, String> titleMap, Locale defaultLocale);
+
+	@Override
+	public String[] getAvailableLanguageIds();
+
+	@Override
+	public String getDefaultLanguageId();
+
+	@Override
+	public void prepareLocalizedFieldsForImport() throws LocaleException;
+
+	@Override
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException;
 
 	@Override
 	public Assignment cloneWithOriginalValues();

@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.training.gradebook.model.Assignment;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provides the remote service utility for Assignment. This utility wraps
@@ -40,13 +41,13 @@ public class AssignmentServiceUtil {
 	 * Never modify this class directly. Add custom service methods to <code>com.liferay.training.gradebook.service.impl.AssignmentServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
 	public static Assignment addAssignment(
-			long groupId, String title, String description,
-			java.util.Date dueDate,
+			long groupId, Map<java.util.Locale, String> titleMap,
+			String description, java.util.Date dueDate,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
 		return getService().addAssignment(
-			groupId, title, description, dueDate, serviceContext);
+			groupId, titleMap, description, dueDate, serviceContext);
 	}
 
 	public static Assignment deleteAssignment(long assignmentId)
@@ -89,13 +90,13 @@ public class AssignmentServiceUtil {
 	}
 
 	public static Assignment updateAssignment(
-			long assignmentId, String title, String description,
-			java.util.Date dueDate,
+			long assignmentId, Map<java.util.Locale, String> titleMap,
+			String description, java.util.Date dueDate,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
 		return getService().updateAssignment(
-			assignmentId, title, description, dueDate, serviceContext);
+			assignmentId, titleMap, description, dueDate, serviceContext);
 	}
 
 	public static AssignmentService getService() {

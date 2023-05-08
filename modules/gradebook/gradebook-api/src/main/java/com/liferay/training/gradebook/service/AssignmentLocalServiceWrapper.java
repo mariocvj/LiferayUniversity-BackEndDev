@@ -55,13 +55,13 @@ public class AssignmentLocalServiceWrapper
 
 	@Override
 	public com.liferay.training.gradebook.model.Assignment addAssignment(
-			long groupId, String title, String description,
-			java.util.Date dueDate,
+			long groupId, java.util.Map<java.util.Locale, String> titleMap,
+			String description, java.util.Date dueDate,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _assignmentLocalService.addAssignment(
-			groupId, title, description, dueDate, serviceContext);
+			groupId, titleMap, description, dueDate, serviceContext);
 	}
 
 	/**
@@ -386,13 +386,13 @@ public class AssignmentLocalServiceWrapper
 
 	@Override
 	public com.liferay.training.gradebook.model.Assignment updateAssignment(
-			long assignmentId, String title, String description,
-			java.util.Date dueDate,
+			long assignmentId, java.util.Map<java.util.Locale, String> titleMap,
+			String description, java.util.Date dueDate,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _assignmentLocalService.updateAssignment(
-			assignmentId, title, description, dueDate, serviceContext);
+			assignmentId, titleMap, description, dueDate, serviceContext);
 	}
 
 	@Override

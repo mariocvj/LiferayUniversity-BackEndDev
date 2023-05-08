@@ -22,7 +22,7 @@ create table Gradebook_Assignment (
 	userName VARCHAR(75) null,
 	createDate DATE null,
 	modifiedDate DATE null,
-	title VARCHAR(75) null,
 	description VARCHAR(75) null,
-	dueDate DATE null
+	dueDate DATE null,
+	title STRING null
 );

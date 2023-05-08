@@ -49,9 +49,9 @@ public class AssignmentWrapper
 		attributes.put("userName", getUserName());
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
-		attributes.put("title", getTitle());
 		attributes.put("description", getDescription());
 		attributes.put("dueDate", getDueDate());
+		attributes.put("title", getTitle());
 
 		return attributes;
 	}
@@ -100,12 +100,6 @@ public class AssignmentWrapper
 			setModifiedDate(modifiedDate);
 		}
 
-		String title = (String)attributes.get("title");
-
-		if (title != null) {
-			setTitle(title);
-		}
-
 		String description = (String)attributes.get("description");
 
 		if (description != null) {
@@ -116,6 +110,12 @@ public class AssignmentWrapper
 
 		if (dueDate != null) {
 			setDueDate(dueDate);
+		}
+
+		String title = (String)attributes.get("title");
+
+		if (title != null) {
+			setTitle(title);
 		}
 	}
 
@@ -132,6 +132,11 @@ public class AssignmentWrapper
 	@Override
 	public long getAssignmentId() {
 		return model.getAssignmentId();
+	}
+
+	@Override
+	public String[] getAvailableLanguageIds() {
+		return model.getAvailableLanguageIds();
 	}
 
 	/**
@@ -152,6 +157,11 @@ public class AssignmentWrapper
 	@Override
 	public Date getCreateDate() {
 		return model.getCreateDate();
+	}
+
+	@Override
+	public String getDefaultLanguageId() {
+		return model.getDefaultLanguageId();
 	}
 
 	/**
@@ -215,6 +225,72 @@ public class AssignmentWrapper
 	}
 
 	/**
+	 * Returns the localized title of this assignment in the language. Uses the default language if no localization exists for the requested language.
+	 *
+	 * @param locale the locale of the language
+	 * @return the localized title of this assignment
+	 */
+	@Override
+	public String getTitle(java.util.Locale locale) {
+		return model.getTitle(locale);
+	}
+
+	/**
+	 * Returns the localized title of this assignment in the language, optionally using the default language if no localization exists for the requested language.
+	 *
+	 * @param locale the local of the language
+	 * @param useDefault whether to use the default language if no localization exists for the requested language
+	 * @return the localized title of this assignment. If <code>useDefault</code> is <code>false</code> and no localization exists for the requested language, an empty string will be returned.
+	 */
+	@Override
+	public String getTitle(java.util.Locale locale, boolean useDefault) {
+		return model.getTitle(locale, useDefault);
+	}
+
+	/**
+	 * Returns the localized title of this assignment in the language. Uses the default language if no localization exists for the requested language.
+	 *
+	 * @param languageId the ID of the language
+	 * @return the localized title of this assignment
+	 */
+	@Override
+	public String getTitle(String languageId) {
+		return model.getTitle(languageId);
+	}
+
+	/**
+	 * Returns the localized title of this assignment in the language, optionally using the default language if no localization exists for the requested language.
+	 *
+	 * @param languageId the ID of the language
+	 * @param useDefault whether to use the default language if no localization exists for the requested language
+	 * @return the localized title of this assignment
+	 */
+	@Override
+	public String getTitle(String languageId, boolean useDefault) {
+		return model.getTitle(languageId, useDefault);
+	}
+
+	@Override
+	public String getTitleCurrentLanguageId() {
+		return model.getTitleCurrentLanguageId();
+	}
+
+	@Override
+	public String getTitleCurrentValue() {
+		return model.getTitleCurrentValue();
+	}
+
+	/**
+	 * Returns a map of the locales and localized titles of this assignment.
+	 *
+	 * @return the locales and localized titles of this assignment
+	 */
+	@Override
+	public Map<java.util.Locale, String> getTitleMap() {
+		return model.getTitleMap();
+	}
+
+	/**
 	 * Returns the user ID of this assignment.
 	 *
 	 * @return the user ID of this assignment
@@ -247,6 +323,21 @@ public class AssignmentWrapper
 	@Override
 	public void persist() {
 		model.persist();
+	}
+
+	@Override
+	public void prepareLocalizedFieldsForImport()
+		throws com.liferay.portal.kernel.exception.LocaleException {
+
+		model.prepareLocalizedFieldsForImport();
+	}
+
+	@Override
+	public void prepareLocalizedFieldsForImport(
+			java.util.Locale defaultImportLocale)
+		throws com.liferay.portal.kernel.exception.LocaleException {
+
+		model.prepareLocalizedFieldsForImport(defaultImportLocale);
 	}
 
 	/**
@@ -337,6 +428,60 @@ public class AssignmentWrapper
 	@Override
 	public void setTitle(String title) {
 		model.setTitle(title);
+	}
+
+	/**
+	 * Sets the localized title of this assignment in the language.
+	 *
+	 * @param title the localized title of this assignment
+	 * @param locale the locale of the language
+	 */
+	@Override
+	public void setTitle(String title, java.util.Locale locale) {
+		model.setTitle(title, locale);
+	}
+
+	/**
+	 * Sets the localized title of this assignment in the language, and sets the default locale.
+	 *
+	 * @param title the localized title of this assignment
+	 * @param locale the locale of the language
+	 * @param defaultLocale the default locale
+	 */
+	@Override
+	public void setTitle(
+		String title, java.util.Locale locale, java.util.Locale defaultLocale) {
+
+		model.setTitle(title, locale, defaultLocale);
+	}
+
+	@Override
+	public void setTitleCurrentLanguageId(String languageId) {
+		model.setTitleCurrentLanguageId(languageId);
+	}
+
+	/**
+	 * Sets the localized titles of this assignment from the map of locales and localized titles.
+	 *
+	 * @param titleMap the locales and localized titles of this assignment
+	 */
+	@Override
+	public void setTitleMap(Map<java.util.Locale, String> titleMap) {
+		model.setTitleMap(titleMap);
+	}
+
+	/**
+	 * Sets the localized titles of this assignment from the map of locales and localized titles, and sets the default locale.
+	 *
+	 * @param titleMap the locales and localized titles of this assignment
+	 * @param defaultLocale the default locale
+	 */
+	@Override
+	public void setTitleMap(
+		Map<java.util.Locale, String> titleMap,
+		java.util.Locale defaultLocale) {
+
+		model.setTitleMap(titleMap, defaultLocale);
 	}
 
 	/**

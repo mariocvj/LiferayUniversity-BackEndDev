@@ -28,6 +28,8 @@ import com.liferay.training.gradebook.model.Assignment;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -55,8 +57,8 @@ public interface AssignmentService extends BaseService {
 	 * Never modify this interface directly. Add custom service methods to <code>com.liferay.training.gradebook.service.impl.AssignmentServiceImpl</code> and rerun ServiceBuilder to automatically copy the method declarations to this interface. Consume the assignment remote service via injection or a <code>org.osgi.util.tracker.ServiceTracker</code>. Use {@link AssignmentServiceUtil} if injection and service tracking are not available.
 	 */
 	public Assignment addAssignment(
-			long groupId, String title, String description, Date dueDate,
-			ServiceContext serviceContext)
+			long groupId, Map<Locale, String> titleMap, String description,
+			Date dueDate, ServiceContext serviceContext)
 		throws PortalException;
 
 	public Assignment deleteAssignment(long assignmentId)
@@ -84,8 +86,8 @@ public interface AssignmentService extends BaseService {
 	public String getOSGiServiceIdentifier();
 
 	public Assignment updateAssignment(
-			long assignmentId, String title, String description, Date dueDate,
-			ServiceContext serviceContext)
+			long assignmentId, Map<Locale, String> titleMap, String description,
+			Date dueDate, ServiceContext serviceContext)
 		throws PortalException;
 
 }

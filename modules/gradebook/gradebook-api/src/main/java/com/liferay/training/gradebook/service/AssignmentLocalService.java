@@ -37,6 +37,8 @@ import java.io.Serializable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -78,8 +80,8 @@ public interface AssignmentLocalService
 	public Assignment addAssignment(Assignment assignment);
 
 	public Assignment addAssignment(
-			long groupId, String title, String description, Date dueDate,
-			ServiceContext serviceContext)
+			long groupId, Map<Locale, String> titleMap, String description,
+			Date dueDate, ServiceContext serviceContext)
 		throws PortalException;
 
 	/**
@@ -294,8 +296,8 @@ public interface AssignmentLocalService
 	public Assignment updateAssignment(Assignment assignment);
 
 	public Assignment updateAssignment(
-			long assignmentId, String title, String description, Date dueDate,
-			ServiceContext serviceContext)
+			long assignmentId, Map<Locale, String> titleMap, String description,
+			Date dueDate, ServiceContext serviceContext)
 		throws PortalException;
 
 }
