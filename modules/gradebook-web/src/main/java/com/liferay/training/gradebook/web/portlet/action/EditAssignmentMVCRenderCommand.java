@@ -20,64 +20,66 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * @author Mario Cvjetojevic
+ * MVC Command for showing edit assignment view.
+ * 
+ * @author liferay
  */
 @Component(
-        immediate = true,
-        property = {
-                "javax.portlet.name=" + GradebookPortletKeys.GRADEBOOK,
-                "mvc.command.name=" + MVCCommandNames.EDIT_ASSIGNMENT
-        },
-        service = MVCRenderCommand.class
+	immediate = true,
+	property = {
+		"javax.portlet.name=" + GradebookPortletKeys.GRADEBOOK,
+		"mvc.command.name=" + MVCCommandNames.EDIT_ASSIGNMENT
+	}, 
+	service = MVCRenderCommand.class
 )
 public class EditAssignmentMVCRenderCommand implements MVCRenderCommand {
 
-    @Override
-    public String render(
-            RenderRequest renderRequest, RenderResponse renderResponse)
-            throws PortletException {
+	@Override
+	public String render(
+		RenderRequest renderRequest, RenderResponse renderResponse)
+		throws PortletException {
 
-        Assignment assignment = null;
+		Assignment assignment = null;
 
-        long assignmentId = ParamUtil.getLong(renderRequest, "assignmentId", 0);
+		long assignmentId = ParamUtil.getLong(renderRequest, "assignmentId", 0);
 
-        if (assignmentId > 0) {
-            try {
+		if (assignmentId > 0) {
+			try {
+				
+				// Call the service to get the assignment for editing.
+				
+				assignment = _assignmentService.getAssignment(assignmentId);
+			}
+			catch (NoSuchAssignmentException nsae) {
+				nsae.printStackTrace();
+			}
+			catch (PortalException pe) {
+				pe.printStackTrace();
+			}
+		}
+		
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-                // Call the service to get the assignment for editing.
+		// Set back icon visible.
+		
+		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
 
-                assignment = _assignmentService.getAssignment(assignmentId);
-            }
-            catch (NoSuchAssignmentException nsae) {
-                nsae.printStackTrace();
-            }
-            catch (PortalException pe) {
-                pe.printStackTrace();
-            }
-        }
+		portletDisplay.setShowBackIcon(true);
 
-        ThemeDisplay themeDisplay =
-                (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		String redirect = renderRequest.getParameter("redirect");
 
-        // Set back icon visible.
+		portletDisplay.setURLBack(redirect);
 
-        PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
+		// Set assignment to the request attributes.
+		
+		renderRequest.setAttribute("assignment", assignment);
+		renderRequest.setAttribute("assignmentClass", Assignment.class);
 
-        portletDisplay.setShowBackIcon(true);
+		return "/assignment/edit_assignment.jsp";
+	}
 
-        String redirect = renderRequest.getParameter("redirect");
-
-        portletDisplay.setURLBack(redirect);
-
-        // Set assignment to the request attributes.
-
-        renderRequest.setAttribute("assignment", assignment);
-        renderRequest.setAttribute("assignmentClass", Assignment.class);
-
-        return "/assignment/edit_assignments.jsp";
-    }
-
-    @Reference
-    private AssignmentService _assignmentService;
+	@Reference
+	private AssignmentService _assignmentService;
 
 }

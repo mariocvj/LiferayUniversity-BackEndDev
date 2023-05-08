@@ -16,46 +16,48 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * @author Mario Cvjetojevic
- */
+	* MVC Action Command for deleting assignments.
+	* 
+	* @author liferay
+	*/
 @Component(
-        immediate = true,
-        property = {
-                "javax.portlet.name=" + GradebookPortletKeys.GRADEBOOK,
-                "mvc.command.name=/gradebook/assignment/delete"
-        },
-        service = MVCActionCommand.class
+	immediate = true,
+	property = {
+		"javax.portlet.name=" + GradebookPortletKeys.GRADEBOOK,
+		"mvc.command.name=/gradebook/assignment/delete"
+	},
+	service = MVCActionCommand.class
 )
 public class DeleteAssignmentMVCActionCommand extends BaseMVCActionCommand {
 
-    @Override
-    protected void doProcessAction(
-            ActionRequest actionRequest, ActionResponse actionResponse)
-            throws Exception {
+	@Override
+	protected void doProcessAction(
+		ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
 
-        // Get assignment id from request.
+		// Get assignment id from request.
 
-        long assignmentId = ParamUtil.getLong(actionRequest, "assignmentId");
+		long assignmentId = ParamUtil.getLong(actionRequest, "assignmentId");
 
-        try {
+		try {
 
-            // Call service to delete the assignment.
+			// Call service to delete the assignment.
 
-            _assignmentService.deleteAssignment(assignmentId);
+			_assignmentService.deleteAssignment(assignmentId);
 
-            // Set success message.
+			// Set success message.
 
-            SessionMessages.add(actionRequest, "assignmentDeleted");
-        }
-        catch (PortalException pe) {
+			SessionMessages.add(actionRequest, "assignmentDeleted");
+		}
+		catch (PortalException pe) {
 
-            // Set error messages from the service layer.
+			// Set error messages from the service layer.
 
-            SessionErrors.add(actionRequest, "serviceErrorDetails", pe);
-        }
+			SessionErrors.add(actionRequest, "serviceErrorDetails", pe);
+		}
 
-    }
+	}
 
-    @Reference
-    protected AssignmentService _assignmentService;
+	@Reference
+	protected AssignmentService _assignmentService;
 }
