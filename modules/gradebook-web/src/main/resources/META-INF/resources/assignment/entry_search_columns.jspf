@@ -95,7 +95,7 @@
         <liferay-ui:search-container-column-text
                 href="${viewAssignmentURL}"
                 name="title"
-                value="<%= entry.getTitle() %>"
+                value="<%= entry.getTitle(locale) %>"
         />
 
         <liferay-ui:search-container-column-user
