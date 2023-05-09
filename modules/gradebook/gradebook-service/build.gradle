@@ -1,7 +1,11 @@
 dependencies {
-	compile project(":modules:gradebook:gradebook-api")
+
+	compileOnly project(":modules:gradebook:gradebook-api")
 
 	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+
+	compileOnly group: "com.liferay", name: "com.liferay.portal.search.spi"
+	compileOnly group: "com.liferay", name: "com.liferay.portal.search.api"
 }
 
 buildService {
@@ -9,3 +13,11 @@ buildService {
 }
 
 group = "com.liferay.training.gradebook"
+
+tasks.withType(JavaCompile) {
+
+	// Generated classes using Jodd library are unable to be read when compiled against JDK 11
+
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+}
