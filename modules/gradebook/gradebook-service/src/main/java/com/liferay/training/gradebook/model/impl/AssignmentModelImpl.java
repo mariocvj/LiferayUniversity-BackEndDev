@@ -33,8 +33,10 @@ import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.training.gradebook.model.Assignment;
 import com.liferay.training.gradebook.model.AssignmentModel;
+import com.liferay.training.gradebook.model.AssignmentSoap;
 
 import java.io.Serializable;
 
@@ -43,10 +45,12 @@ import java.lang.reflect.InvocationHandler;
 import java.sql.Blob;
 import java.sql.Types;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -82,7 +86,9 @@ public class AssignmentModelImpl
 		{"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
 		{"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
 		{"modifiedDate", Types.TIMESTAMP}, {"description", Types.VARCHAR},
-		{"dueDate", Types.TIMESTAMP}, {"title", Types.VARCHAR}
+		{"dueDate", Types.TIMESTAMP}, {"status", Types.INTEGER},
+		{"statusByUserId", Types.BIGINT}, {"statusByUserName", Types.VARCHAR},
+		{"statusDate", Types.TIMESTAMP}, {"title", Types.VARCHAR}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -98,11 +104,15 @@ public class AssignmentModelImpl
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("dueDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
+		TABLE_COLUMNS_MAP.put("statusByUserId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("statusByUserName", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("statusDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("title", Types.VARCHAR);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table Gradebook_Assignment (assignmentId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,description VARCHAR(75) null,dueDate DATE null,title STRING null)";
+		"create table Gradebook_Assignment (assignmentId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,description VARCHAR(75) null,dueDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null,title STRING null)";
 
 	public static final String TABLE_SQL_DROP =
 		"drop table Gradebook_Assignment";
@@ -143,6 +153,61 @@ public class AssignmentModelImpl
 	 */
 	@Deprecated
 	public static void setFinderCacheEnabled(boolean finderCacheEnabled) {
+	}
+
+	/**
+	 * Converts the soap model instance into a normal model instance.
+	 *
+	 * @param soapModel the soap model instance to convert
+	 * @return the normal model instance
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
+	public static Assignment toModel(AssignmentSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
+		Assignment model = new AssignmentImpl();
+
+		model.setAssignmentId(soapModel.getAssignmentId());
+		model.setGroupId(soapModel.getGroupId());
+		model.setCompanyId(soapModel.getCompanyId());
+		model.setUserId(soapModel.getUserId());
+		model.setUserName(soapModel.getUserName());
+		model.setCreateDate(soapModel.getCreateDate());
+		model.setModifiedDate(soapModel.getModifiedDate());
+		model.setDescription(soapModel.getDescription());
+		model.setDueDate(soapModel.getDueDate());
+		model.setStatus(soapModel.getStatus());
+		model.setStatusByUserId(soapModel.getStatusByUserId());
+		model.setStatusByUserName(soapModel.getStatusByUserName());
+		model.setStatusDate(soapModel.getStatusDate());
+		model.setTitle(soapModel.getTitle());
+
+		return model;
+	}
+
+	/**
+	 * Converts the soap model instances into normal model instances.
+	 *
+	 * @param soapModels the soap model instances to convert
+	 * @return the normal model instances
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
+	public static List<Assignment> toModels(AssignmentSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
+		List<Assignment> models = new ArrayList<Assignment>(soapModels.length);
+
+		for (AssignmentSoap soapModel : soapModels) {
+			models.add(toModel(soapModel));
+		}
+
+		return models;
 	}
 
 	public AssignmentModelImpl() {
@@ -275,6 +340,23 @@ public class AssignmentModelImpl
 		attributeGetterFunctions.put("dueDate", Assignment::getDueDate);
 		attributeSetterBiConsumers.put(
 			"dueDate", (BiConsumer<Assignment, Date>)Assignment::setDueDate);
+		attributeGetterFunctions.put("status", Assignment::getStatus);
+		attributeSetterBiConsumers.put(
+			"status", (BiConsumer<Assignment, Integer>)Assignment::setStatus);
+		attributeGetterFunctions.put(
+			"statusByUserId", Assignment::getStatusByUserId);
+		attributeSetterBiConsumers.put(
+			"statusByUserId",
+			(BiConsumer<Assignment, Long>)Assignment::setStatusByUserId);
+		attributeGetterFunctions.put(
+			"statusByUserName", Assignment::getStatusByUserName);
+		attributeSetterBiConsumers.put(
+			"statusByUserName",
+			(BiConsumer<Assignment, String>)Assignment::setStatusByUserName);
+		attributeGetterFunctions.put("statusDate", Assignment::getStatusDate);
+		attributeSetterBiConsumers.put(
+			"statusDate",
+			(BiConsumer<Assignment, Date>)Assignment::setStatusDate);
 		attributeGetterFunctions.put("title", Assignment::getTitle);
 		attributeSetterBiConsumers.put(
 			"title", (BiConsumer<Assignment, String>)Assignment::setTitle);
@@ -463,6 +545,87 @@ public class AssignmentModelImpl
 
 	@JSON
 	@Override
+	public int getStatus() {
+		return _status;
+	}
+
+	@Override
+	public void setStatus(int status) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_status = status;
+	}
+
+	@JSON
+	@Override
+	public long getStatusByUserId() {
+		return _statusByUserId;
+	}
+
+	@Override
+	public void setStatusByUserId(long statusByUserId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_statusByUserId = statusByUserId;
+	}
+
+	@Override
+	public String getStatusByUserUuid() {
+		try {
+			User user = UserLocalServiceUtil.getUserById(getStatusByUserId());
+
+			return user.getUuid();
+		}
+		catch (PortalException portalException) {
+			return "";
+		}
+	}
+
+	@Override
+	public void setStatusByUserUuid(String statusByUserUuid) {
+	}
+
+	@JSON
+	@Override
+	public String getStatusByUserName() {
+		if (_statusByUserName == null) {
+			return "";
+		}
+		else {
+			return _statusByUserName;
+		}
+	}
+
+	@Override
+	public void setStatusByUserName(String statusByUserName) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_statusByUserName = statusByUserName;
+	}
+
+	@JSON
+	@Override
+	public Date getStatusDate() {
+		return _statusDate;
+	}
+
+	@Override
+	public void setStatusDate(Date statusDate) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_statusDate = statusDate;
+	}
+
+	@JSON
+	@Override
 	public String getTitle() {
 		if (_title == null) {
 			return "";
@@ -568,6 +731,86 @@ public class AssignmentModelImpl
 			LocalizationUtil.updateLocalization(
 				titleMap, getTitle(), "Title",
 				LocaleUtil.toLanguageId(defaultLocale)));
+	}
+
+	@Override
+	public boolean isApproved() {
+		if (getStatus() == WorkflowConstants.STATUS_APPROVED) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isDenied() {
+		if (getStatus() == WorkflowConstants.STATUS_DENIED) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isDraft() {
+		if (getStatus() == WorkflowConstants.STATUS_DRAFT) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isExpired() {
+		if (getStatus() == WorkflowConstants.STATUS_EXPIRED) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isInactive() {
+		if (getStatus() == WorkflowConstants.STATUS_INACTIVE) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isIncomplete() {
+		if (getStatus() == WorkflowConstants.STATUS_INCOMPLETE) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isPending() {
+		if (getStatus() == WorkflowConstants.STATUS_PENDING) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isScheduled() {
+		if (getStatus() == WorkflowConstants.STATUS_SCHEDULED) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	public long getColumnBitmask() {
@@ -701,33 +944,13 @@ public class AssignmentModelImpl
 		assignmentImpl.setModifiedDate(getModifiedDate());
 		assignmentImpl.setDescription(getDescription());
 		assignmentImpl.setDueDate(getDueDate());
+		assignmentImpl.setStatus(getStatus());
+		assignmentImpl.setStatusByUserId(getStatusByUserId());
+		assignmentImpl.setStatusByUserName(getStatusByUserName());
+		assignmentImpl.setStatusDate(getStatusDate());
 		assignmentImpl.setTitle(getTitle());
 
 		assignmentImpl.resetOriginalValues();
-
-		return assignmentImpl;
-	}
-
-	@Override
-	public Assignment cloneWithOriginalValues() {
-		AssignmentImpl assignmentImpl = new AssignmentImpl();
-
-		assignmentImpl.setAssignmentId(
-			this.<Long>getColumnOriginalValue("assignmentId"));
-		assignmentImpl.setGroupId(this.<Long>getColumnOriginalValue("groupId"));
-		assignmentImpl.setCompanyId(
-			this.<Long>getColumnOriginalValue("companyId"));
-		assignmentImpl.setUserId(this.<Long>getColumnOriginalValue("userId"));
-		assignmentImpl.setUserName(
-			this.<String>getColumnOriginalValue("userName"));
-		assignmentImpl.setCreateDate(
-			this.<Date>getColumnOriginalValue("createDate"));
-		assignmentImpl.setModifiedDate(
-			this.<Date>getColumnOriginalValue("modifiedDate"));
-		assignmentImpl.setDescription(
-			this.<String>getColumnOriginalValue("description"));
-		assignmentImpl.setDueDate(this.<Date>getColumnOriginalValue("dueDate"));
-		assignmentImpl.setTitle(this.<String>getColumnOriginalValue("title"));
 
 		return assignmentImpl;
 	}
@@ -854,6 +1077,27 @@ public class AssignmentModelImpl
 			assignmentCacheModel.dueDate = Long.MIN_VALUE;
 		}
 
+		assignmentCacheModel.status = getStatus();
+
+		assignmentCacheModel.statusByUserId = getStatusByUserId();
+
+		assignmentCacheModel.statusByUserName = getStatusByUserName();
+
+		String statusByUserName = assignmentCacheModel.statusByUserName;
+
+		if ((statusByUserName != null) && (statusByUserName.length() == 0)) {
+			assignmentCacheModel.statusByUserName = null;
+		}
+
+		Date statusDate = getStatusDate();
+
+		if (statusDate != null) {
+			assignmentCacheModel.statusDate = statusDate.getTime();
+		}
+		else {
+			assignmentCacheModel.statusDate = Long.MIN_VALUE;
+		}
+
 		assignmentCacheModel.title = getTitle();
 
 		String title = assignmentCacheModel.title;
@@ -914,6 +1158,37 @@ public class AssignmentModelImpl
 		return sb.toString();
 	}
 
+	@Override
+	public String toXmlString() {
+		Map<String, Function<Assignment, Object>> attributeGetterFunctions =
+			getAttributeGetterFunctions();
+
+		StringBundler sb = new StringBundler(
+			(5 * attributeGetterFunctions.size()) + 4);
+
+		sb.append("<model><model-name>");
+		sb.append(getModelClassName());
+		sb.append("</model-name>");
+
+		for (Map.Entry<String, Function<Assignment, Object>> entry :
+				attributeGetterFunctions.entrySet()) {
+
+			String attributeName = entry.getKey();
+			Function<Assignment, Object> attributeGetterFunction =
+				entry.getValue();
+
+			sb.append("<column><column-name>");
+			sb.append(attributeName);
+			sb.append("</column-name><column-value><![CDATA[");
+			sb.append(attributeGetterFunction.apply((Assignment)this));
+			sb.append("]]></column-value></column>");
+		}
+
+		sb.append("</model>");
+
+		return sb.toString();
+	}
+
 	private static class EscapedModelProxyProviderFunctionHolder {
 
 		private static final Function<InvocationHandler, Assignment>
@@ -933,6 +1208,10 @@ public class AssignmentModelImpl
 	private boolean _setModifiedDate;
 	private String _description;
 	private Date _dueDate;
+	private int _status;
+	private long _statusByUserId;
+	private String _statusByUserName;
+	private Date _statusDate;
 	private String _title;
 	private String _titleCurrentLanguageId;
 
@@ -972,6 +1251,10 @@ public class AssignmentModelImpl
 		_columnOriginalValues.put("modifiedDate", _modifiedDate);
 		_columnOriginalValues.put("description", _description);
 		_columnOriginalValues.put("dueDate", _dueDate);
+		_columnOriginalValues.put("status", _status);
+		_columnOriginalValues.put("statusByUserId", _statusByUserId);
+		_columnOriginalValues.put("statusByUserName", _statusByUserName);
+		_columnOriginalValues.put("statusDate", _statusDate);
 		_columnOriginalValues.put("title", _title);
 	}
 
@@ -1004,7 +1287,15 @@ public class AssignmentModelImpl
 
 		columnBitmasks.put("dueDate", 256L);
 
-		columnBitmasks.put("title", 512L);
+		columnBitmasks.put("status", 512L);
+
+		columnBitmasks.put("statusByUserId", 1024L);
+
+		columnBitmasks.put("statusByUserName", 2048L);
+
+		columnBitmasks.put("statusDate", 4096L);
+
+		columnBitmasks.put("title", 8192L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

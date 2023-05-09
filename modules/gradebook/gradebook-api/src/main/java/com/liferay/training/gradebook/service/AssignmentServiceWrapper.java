@@ -26,10 +26,6 @@ import com.liferay.portal.kernel.service.ServiceWrapper;
 public class AssignmentServiceWrapper
 	implements AssignmentService, ServiceWrapper<AssignmentService> {
 
-	public AssignmentServiceWrapper() {
-		this(null);
-	}
-
 	public AssignmentServiceWrapper(AssignmentService assignmentService) {
 		_assignmentService = assignmentService;
 	}

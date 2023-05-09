@@ -26,10 +26,6 @@ import com.liferay.portal.kernel.service.ServiceWrapper;
 public class AssignmentLocalServiceWrapper
 	implements AssignmentLocalService, ServiceWrapper<AssignmentLocalService> {
 
-	public AssignmentLocalServiceWrapper() {
-		this(null);
-	}
-
 	public AssignmentLocalServiceWrapper(
 		AssignmentLocalService assignmentLocalService) {
 
@@ -135,18 +131,6 @@ public class AssignmentLocalServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _assignmentLocalService.deletePersistedModel(persistedModel);
-	}
-
-	@Override
-	public <T> T dslQuery(com.liferay.petra.sql.dsl.query.DSLQuery dslQuery) {
-		return _assignmentLocalService.dslQuery(dslQuery);
-	}
-
-	@Override
-	public int dslQueryCount(
-		com.liferay.petra.sql.dsl.query.DSLQuery dslQuery) {
-
-		return _assignmentLocalService.dslQueryCount(dslQuery);
 	}
 
 	@Override

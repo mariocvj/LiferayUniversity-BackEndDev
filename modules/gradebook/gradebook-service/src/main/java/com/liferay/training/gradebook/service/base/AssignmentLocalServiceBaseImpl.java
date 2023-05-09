@@ -14,7 +14,6 @@
 
 package com.liferay.training.gradebook.service.base;
 
-import com.liferay.petra.sql.dsl.query.DSLQuery;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
@@ -143,18 +142,6 @@ public abstract class AssignmentLocalServiceBaseImpl
 		throws PortalException {
 
 		return assignmentPersistence.remove(assignment);
-	}
-
-	@Override
-	public <T> T dslQuery(DSLQuery dslQuery) {
-		return assignmentPersistence.dslQuery(dslQuery);
-	}
-
-	@Override
-	public int dslQueryCount(DSLQuery dslQuery) {
-		Long count = dslQuery(dslQuery);
-
-		return count.intValue();
 	}
 
 	@Override
@@ -306,7 +293,6 @@ public abstract class AssignmentLocalServiceBaseImpl
 	/**
 	 * @throws PortalException
 	 */
-	@Override
 	public PersistedModel createPersistedModel(Serializable primaryKeyObj)
 		throws PortalException {
 
@@ -320,16 +306,10 @@ public abstract class AssignmentLocalServiceBaseImpl
 	public PersistedModel deletePersistedModel(PersistedModel persistedModel)
 		throws PortalException {
 
-		if (_log.isWarnEnabled()) {
-			_log.warn(
-				"Implement AssignmentLocalServiceImpl#deleteAssignment(Assignment) to avoid orphaned data");
-		}
-
 		return assignmentLocalService.deleteAssignment(
 			(Assignment)persistedModel);
 	}
 
-	@Override
 	public BasePersistence<Assignment> getBasePersistence() {
 		return assignmentPersistence;
 	}
