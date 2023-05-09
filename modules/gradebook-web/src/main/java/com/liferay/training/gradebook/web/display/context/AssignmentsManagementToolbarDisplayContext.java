@@ -19,6 +19,8 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.training.gradebook.web.constants.GradebookPortletKeys;
 import com.liferay.training.gradebook.web.constants.MVCCommandNames;
+import com.liferay.training.gradebook.web.internal.security.permission.resource.*;
+import org.osgi.service.component.annotations.Reference;
 
 import java.util.List;
 
@@ -27,7 +29,12 @@ import javax.portlet.PortletURL;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author Mario Cvjetojevic
+ * Assigments management toolbar display context.
+ *
+ * This class passes contextual information to the user interface
+ * for the Clay management toolbar.
+ *
+ * @author liferay
  */
 public class AssignmentsManagementToolbarDisplayContext
         extends BaseManagementToolbarDisplayContext {
@@ -54,6 +61,15 @@ public class AssignmentsManagementToolbarDisplayContext
      * @return creation menu
      */
     public CreationMenu getCreationMenu() {
+
+        // Check if user has permissions to add assignments.
+
+        if (!AssignmentTopLevelPermission.contains(
+                _themeDisplay.getPermissionChecker(),
+                _themeDisplay.getScopeGroupId(), "ADD_ENTRY")) {
+
+            return null;
+        }
 
         // Create the menu.
 
@@ -252,6 +268,9 @@ public class AssignmentsManagementToolbarDisplayContext
 
         return sortingURL;
     }
+
+    @Reference
+    private AssignmentTopLevelPermission _assignmentTopLevelPermission;
 
     private final PortalPreferences _portalPreferences;
     private final ThemeDisplay _themeDisplay;
