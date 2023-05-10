@@ -5,6 +5,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
@@ -69,6 +70,8 @@ public class AddAssignmentMVCActionCommand extends BaseMVCActionCommand {
 			
 			_assignmentService.addAssignment(
 				themeDisplay.getScopeGroupId(), titleMap, description, dueDate, serviceContext);
+
+			SessionMessages.add(actionRequest,"assignmentAdded");
 
 			sendRedirect(actionRequest, actionResponse);
 		}
