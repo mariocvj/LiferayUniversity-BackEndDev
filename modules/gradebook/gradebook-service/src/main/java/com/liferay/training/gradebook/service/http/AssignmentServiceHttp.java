@@ -46,7 +46,6 @@ import com.liferay.training.gradebook.service.AssignmentServiceUtil;
  * </p>
  *
  * @author Brian Wing Shun Chan
- * @see AssignmentServiceSoap
  * @generated
  */
 public class AssignmentServiceHttp {

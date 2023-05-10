@@ -147,6 +147,11 @@ public class AssignmentWrapper
 		}
 	}
 
+	@Override
+	public Assignment cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
+	}
+
 	/**
 	 * Returns the assignment ID of this assignment.
 	 *
@@ -715,6 +720,11 @@ public class AssignmentWrapper
 	@Override
 	public void setUserUuid(String userUuid) {
 		model.setUserUuid(userUuid);
+	}
+
+	@Override
+	public String toXmlString() {
+		return model.toXmlString();
 	}
 
 	@Override

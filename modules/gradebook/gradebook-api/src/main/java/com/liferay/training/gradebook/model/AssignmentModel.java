@@ -477,4 +477,11 @@ public interface AssignmentModel
 	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
 		throws LocaleException;
 
+	@Override
+	public Assignment cloneWithOriginalValues();
+
+	public default String toXmlString() {
+		return null;
+	}
+
 }

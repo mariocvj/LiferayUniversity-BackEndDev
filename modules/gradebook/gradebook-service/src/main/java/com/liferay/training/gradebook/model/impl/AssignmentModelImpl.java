@@ -36,7 +36,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.training.gradebook.model.Assignment;
 import com.liferay.training.gradebook.model.AssignmentModel;
-import com.liferay.training.gradebook.model.AssignmentSoap;
 
 import java.io.Serializable;
 
@@ -45,12 +44,10 @@ import java.lang.reflect.InvocationHandler;
 import java.sql.Blob;
 import java.sql.Types;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -153,61 +150,6 @@ public class AssignmentModelImpl
 	 */
 	@Deprecated
 	public static void setFinderCacheEnabled(boolean finderCacheEnabled) {
-	}
-
-	/**
-	 * Converts the soap model instance into a normal model instance.
-	 *
-	 * @param soapModel the soap model instance to convert
-	 * @return the normal model instance
-	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
-	 */
-	@Deprecated
-	public static Assignment toModel(AssignmentSoap soapModel) {
-		if (soapModel == null) {
-			return null;
-		}
-
-		Assignment model = new AssignmentImpl();
-
-		model.setAssignmentId(soapModel.getAssignmentId());
-		model.setGroupId(soapModel.getGroupId());
-		model.setCompanyId(soapModel.getCompanyId());
-		model.setUserId(soapModel.getUserId());
-		model.setUserName(soapModel.getUserName());
-		model.setCreateDate(soapModel.getCreateDate());
-		model.setModifiedDate(soapModel.getModifiedDate());
-		model.setDescription(soapModel.getDescription());
-		model.setDueDate(soapModel.getDueDate());
-		model.setStatus(soapModel.getStatus());
-		model.setStatusByUserId(soapModel.getStatusByUserId());
-		model.setStatusByUserName(soapModel.getStatusByUserName());
-		model.setStatusDate(soapModel.getStatusDate());
-		model.setTitle(soapModel.getTitle());
-
-		return model;
-	}
-
-	/**
-	 * Converts the soap model instances into normal model instances.
-	 *
-	 * @param soapModels the soap model instances to convert
-	 * @return the normal model instances
-	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
-	 */
-	@Deprecated
-	public static List<Assignment> toModels(AssignmentSoap[] soapModels) {
-		if (soapModels == null) {
-			return null;
-		}
-
-		List<Assignment> models = new ArrayList<Assignment>(soapModels.length);
-
-		for (AssignmentSoap soapModel : soapModels) {
-			models.add(toModel(soapModel));
-		}
-
-		return models;
 	}
 
 	public AssignmentModelImpl() {
@@ -956,6 +898,38 @@ public class AssignmentModelImpl
 	}
 
 	@Override
+	public Assignment cloneWithOriginalValues() {
+		AssignmentImpl assignmentImpl = new AssignmentImpl();
+
+		assignmentImpl.setAssignmentId(
+			this.<Long>getColumnOriginalValue("assignmentId"));
+		assignmentImpl.setGroupId(this.<Long>getColumnOriginalValue("groupId"));
+		assignmentImpl.setCompanyId(
+			this.<Long>getColumnOriginalValue("companyId"));
+		assignmentImpl.setUserId(this.<Long>getColumnOriginalValue("userId"));
+		assignmentImpl.setUserName(
+			this.<String>getColumnOriginalValue("userName"));
+		assignmentImpl.setCreateDate(
+			this.<Date>getColumnOriginalValue("createDate"));
+		assignmentImpl.setModifiedDate(
+			this.<Date>getColumnOriginalValue("modifiedDate"));
+		assignmentImpl.setDescription(
+			this.<String>getColumnOriginalValue("description"));
+		assignmentImpl.setDueDate(this.<Date>getColumnOriginalValue("dueDate"));
+		assignmentImpl.setStatus(
+			this.<Integer>getColumnOriginalValue("status"));
+		assignmentImpl.setStatusByUserId(
+			this.<Long>getColumnOriginalValue("statusByUserId"));
+		assignmentImpl.setStatusByUserName(
+			this.<String>getColumnOriginalValue("statusByUserName"));
+		assignmentImpl.setStatusDate(
+			this.<Date>getColumnOriginalValue("statusDate"));
+		assignmentImpl.setTitle(this.<String>getColumnOriginalValue("title"));
+
+		return assignmentImpl;
+	}
+
+	@Override
 	public int compareTo(Assignment assignment) {
 		int value = 0;
 
@@ -1154,37 +1128,6 @@ public class AssignmentModelImpl
 		}
 
 		sb.append("}");
-
-		return sb.toString();
-	}
-
-	@Override
-	public String toXmlString() {
-		Map<String, Function<Assignment, Object>> attributeGetterFunctions =
-			getAttributeGetterFunctions();
-
-		StringBundler sb = new StringBundler(
-			(5 * attributeGetterFunctions.size()) + 4);
-
-		sb.append("<model><model-name>");
-		sb.append(getModelClassName());
-		sb.append("</model-name>");
-
-		for (Map.Entry<String, Function<Assignment, Object>> entry :
-				attributeGetterFunctions.entrySet()) {
-
-			String attributeName = entry.getKey();
-			Function<Assignment, Object> attributeGetterFunction =
-				entry.getValue();
-
-			sb.append("<column><column-name>");
-			sb.append(attributeName);
-			sb.append("</column-name><column-value><![CDATA[");
-			sb.append(attributeGetterFunction.apply((Assignment)this));
-			sb.append("]]></column-value></column>");
-		}
-
-		sb.append("</model>");
 
 		return sb.toString();
 	}
