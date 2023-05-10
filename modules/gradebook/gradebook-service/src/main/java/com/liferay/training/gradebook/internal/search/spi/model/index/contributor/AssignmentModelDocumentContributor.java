@@ -3,7 +3,7 @@ package com.liferay.training.gradebook.internal.search.spi.model.index.contribut
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
-import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.HtmlParserUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
@@ -29,10 +29,10 @@ public class AssignmentModelDocumentContributor
 
         // Strip HTML.
 
-        String description = HtmlUtil.extractText(assignment.getDescription());
+        String description = HtmlParserUtil.extractText(assignment.getDescription());
         document.addText(Field.DESCRIPTION, description);
 
-        String title = HtmlUtil.extractText(assignment.getTitle());
+        String title = HtmlParserUtil.extractText(assignment.getTitle());
         document.addText(Field.TITLE, title);
 
         document.addDate(Field.MODIFIED_DATE, assignment.getModifiedDate());
