@@ -8,7 +8,7 @@
 
 <div class="container-fluid-1280">
 
-	<h1><liferay-ui:message key="Assignments" /></h1>
+	<h1><liferay-ui:message key="assignment-list-title"/></h1>
 
 	<%-- Clay management toolbar. --%>
 
