@@ -12,6 +12,7 @@
 <%@ taglib prefix="liferay-portlet" uri="http://liferay.com/tld/portlet" %>
 <%@ taglib prefix="liferay-theme" uri="http://liferay.com/tld/theme" %>
 <%@ taglib prefix="liferay-ui" uri="http://liferay.com/tld/ui" %>
+<%@ taglib prefix="liferay-security" uri="http://liferay.com/tld/security" %>
 
 <%@ page import="java.util.Date"%>
 <%@ page import="javax.portlet.WindowState"%>
