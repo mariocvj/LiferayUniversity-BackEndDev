@@ -37,7 +37,7 @@
 
             <h4>
                 <aui:a href="${viewAssignmentURL}">
-                    ${entry.title}
+                    ${entry.getTitle(locale)}
                 </aui:a>
             </h4>
 
@@ -64,7 +64,7 @@
                     actionJsp="/assignment/entry_actions.jsp"
                     actionJspServletContext="<%= application %>"
                     icon="cards2" resultRow="${row}"
-                    title="${entry.title}"
+                    title="${entry.getTitle(locale)}"
                     url="${viewAssignmentURL}">
 
                 <liferay-clay:vertical-card-sticker-bottom>
