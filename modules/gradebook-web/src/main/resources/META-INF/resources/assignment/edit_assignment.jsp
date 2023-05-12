@@ -72,7 +72,7 @@
 
         <aui:button-row>
             <aui:button cssClass="btn btn-primary" type="submit" />
-            <aui:button cssClass="btn btn-secondary" onClick="${param.redirect}" type="cancel" />
+            <aui:button cssClass="btn btn-secondary" href="${param.redirect}" type="cancel" />
         </aui:button-row>
     </aui:form>
 
