@@ -24,5 +24,9 @@ create table Gradebook_Assignment (
 	modifiedDate DATE null,
 	description VARCHAR(75) null,
 	dueDate DATE null,
+	status INTEGER,
+	statusByUserId LONG,
+	statusByUserName VARCHAR(75) null,
+	statusDate DATE null,
 	title STRING null
 );
