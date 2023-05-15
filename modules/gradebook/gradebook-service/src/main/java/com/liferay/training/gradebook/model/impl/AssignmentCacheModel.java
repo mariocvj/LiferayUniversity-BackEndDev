@@ -62,7 +62,7 @@ public class AssignmentCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(21);
+		StringBundler sb = new StringBundler(29);
 
 		sb.append("{assignmentId=");
 		sb.append(assignmentId);
@@ -82,6 +82,14 @@ public class AssignmentCacheModel
 		sb.append(description);
 		sb.append(", dueDate=");
 		sb.append(dueDate);
+		sb.append(", status=");
+		sb.append(status);
+		sb.append(", statusByUserId=");
+		sb.append(statusByUserId);
+		sb.append(", statusByUserName=");
+		sb.append(statusByUserName);
+		sb.append(", statusDate=");
+		sb.append(statusDate);
 		sb.append(", title=");
 		sb.append(title);
 		sb.append("}");
@@ -133,6 +141,23 @@ public class AssignmentCacheModel
 			assignmentImpl.setDueDate(new Date(dueDate));
 		}
 
+		assignmentImpl.setStatus(status);
+		assignmentImpl.setStatusByUserId(statusByUserId);
+
+		if (statusByUserName == null) {
+			assignmentImpl.setStatusByUserName("");
+		}
+		else {
+			assignmentImpl.setStatusByUserName(statusByUserName);
+		}
+
+		if (statusDate == Long.MIN_VALUE) {
+			assignmentImpl.setStatusDate(null);
+		}
+		else {
+			assignmentImpl.setStatusDate(new Date(statusDate));
+		}
+
 		if (title == null) {
 			assignmentImpl.setTitle("");
 		}
@@ -159,6 +184,12 @@ public class AssignmentCacheModel
 		modifiedDate = objectInput.readLong();
 		description = objectInput.readUTF();
 		dueDate = objectInput.readLong();
+
+		status = objectInput.readInt();
+
+		statusByUserId = objectInput.readLong();
+		statusByUserName = objectInput.readUTF();
+		statusDate = objectInput.readLong();
 		title = objectInput.readUTF();
 	}
 
@@ -191,6 +222,19 @@ public class AssignmentCacheModel
 
 		objectOutput.writeLong(dueDate);
 
+		objectOutput.writeInt(status);
+
+		objectOutput.writeLong(statusByUserId);
+
+		if (statusByUserName == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(statusByUserName);
+		}
+
+		objectOutput.writeLong(statusDate);
+
 		if (title == null) {
 			objectOutput.writeUTF("");
 		}
@@ -208,6 +252,10 @@ public class AssignmentCacheModel
 	public long modifiedDate;
 	public String description;
 	public long dueDate;
+	public int status;
+	public long statusByUserId;
+	public String statusByUserName;
+	public long statusDate;
 	public String title;
 
 }
