@@ -14,6 +14,9 @@
 <%@ taglib prefix="liferay-ui" uri="http://liferay.com/tld/ui" %>
 <%@ taglib prefix="liferay-security" uri="http://liferay.com/tld/security" %>
 
+<%@ page import="com.liferay.asset.kernel.model.AssetRenderer"%>
+<%@ page import="com.liferay.portal.kernel.util.WebKeys"%>
+
 <%@ page import="java.util.Date"%>
 <%@ page import="javax.portlet.WindowState"%>
 
